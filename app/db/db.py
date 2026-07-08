@@ -1,29 +1,40 @@
-# app/db/db.py
-import psycopg2
 import os
+
 from dotenv import load_dotenv
+from sqlalchemy import create_engine
+from sqlalchemy.orm import declarative_base, sessionmaker
 
 load_dotenv()
 
-# Параметры подключения к БД из переменных окружения
-DB_CONFIG = {
-    'dbname': os.getenv('DB_NAME', 'your_database_name'),
-    'user': os.getenv('DB_USER', 'octagon'),
-    'password': os.getenv('DB_PASSWORD', '12345'),
-    'host': os.getenv('DB_HOST', 'localhost'),
-    'port': os.getenv('DB_PORT', '5432')
-}
+DB_NAME = os.getenv("DB_NAME", "your_database_name")
+DB_USER = os.getenv("DB_USER", "octagon")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "12345")
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_PORT = os.getenv("DB_PORT", "5432")
 
-def get_db_connection():
-    """Создает и возвращает подключение к БД"""
+DATABASE_URL = (
+    f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}"
+    f"@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+)
+
+engine = create_engine(DATABASE_URL)
+
+SessionLocal = sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    bind=engine
+)
+
+Base = declarative_base()
+
+def get_db():
+    """
+    Создаёт сессию SQLAlchemy.
+    Используется как зависимость в FastAPI.
+    """
+    db = SessionLocal()
+
     try:
-        conn = psycopg2.connect(**DB_CONFIG)
-        return conn
-    except Exception as e:
-        print(f"Ошибка подключения к БД: {e}")
-        return None
-
-def close_db_connection(conn):
-    """Закрывает подключение к БД"""
-    if conn:
-        conn.close()
+        yield db
+    finally:
+        db.close()

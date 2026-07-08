@@ -1,42 +1,43 @@
-from .db import get_db_connection
+from sqlalchemy import Column, ForeignKey, Integer, Numeric, String, Text
+from sqlalchemy.orm import relationship
+
+from app.db.db import Base, engine
+
+class Category(Base):
+    __tablename__ = "categories"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(255), nullable=False, unique=True)
+
+    books = relationship(
+        "Book",
+        back_populates="category",
+        cascade="all, delete-orphan"
+    )
+
+class Book(Base):
+    __tablename__ = "books"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(255), nullable=False)
+    description = Column(Text, nullable=True)
+    price = Column(Numeric(10, 2), nullable=False)
+    url = Column(String(500), default="")
+
+    category_id = Column(
+        Integer,
+        ForeignKey("categories.id", ondelete="CASCADE"),
+        nullable=False
+    )
+
+    category = relationship(
+        "Category",
+        back_populates="books"
+    )
 
 def create_tables():
-    """Создает таблицы categories и books, если их нет"""
-    conn = get_db_connection()
-    if not conn:
-        return False
-    
-    try:
-        cur = conn.cursor()
-        
-        # Создание таблицы categories
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS categories (
-                id SERIAL PRIMARY KEY,
-                title VARCHAR(255) NOT NULL UNIQUE
-            )
-        """)
-        
-        # Создание таблицы books
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS books (
-                id SERIAL PRIMARY KEY,
-                title VARCHAR(255) NOT NULL,
-                description TEXT,
-                price DECIMAL(10, 2) NOT NULL,
-                url VARCHAR(500) DEFAULT '',
-                category_id INTEGER REFERENCES categories(id) ON DELETE CASCADE
-            )
-        """)
-        
-        conn.commit()
-        cur.close()
-        print("Таблицы успешно созданы (или уже существуют)")
-        return True
-        
-    except Exception as e:
-        print(f"Ошибка создания таблиц: {e}")
-        conn.rollback()
-        return False
-    finally:
-        conn.close()
+    """
+    Создаёт таблицы categories и books через SQLAlchemy ORM.
+    """
+    Base.metadata.create_all(bind=engine)
+    print("Таблицы успешно созданы или уже существуют")
