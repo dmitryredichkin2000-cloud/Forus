@@ -11,6 +11,14 @@ app = FastAPI(
     version="1.0.0"
 )
 
+@app.get("/")
+def root():
+    return {
+        "message": "Forus Books API работает",
+        "docs": "/docs",
+        "health": "/health"
+    }
+
 @app.get("/health")
 def health_check():
     return {

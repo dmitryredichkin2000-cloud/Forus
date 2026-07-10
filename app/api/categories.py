@@ -15,10 +15,7 @@ def read_categories(db: Session = Depends(get_db)):
     return crud.get_all_categories(db)
 
 @router.get("/{category_id}", response_model=schemas.CategoryResponse)
-def read_category(
-    category_id: int,
-    db: Session = Depends(get_db)
-):
+def read_category(category_id: int, db: Session = Depends(get_db)):
     category = crud.get_category(db, category_id)
 
     if category is None:
@@ -61,10 +58,7 @@ def update_category(
     return updated_category
 
 @router.delete("/{category_id}")
-def delete_category(
-    category_id: int,
-    db: Session = Depends(get_db)
-):
+def delete_category(category_id: int, db: Session = Depends(get_db)):
     deleted_category = crud.delete_category(db, category_id)
 
     if deleted_category is None:

@@ -36,8 +36,5 @@ class Book(Base):
     )
 
 def create_tables():
-    """
-    Создаёт таблицы categories и books через SQLAlchemy ORM.
-    """
     Base.metadata.create_all(bind=engine)
     print("Таблицы успешно созданы или уже существуют")

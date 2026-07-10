@@ -31,10 +31,7 @@ def read_books(
     return crud.get_all_books(db)
 
 @router.get("/{book_id}", response_model=schemas.BookResponse)
-def read_book(
-    book_id: int,
-    db: Session = Depends(get_db)
-):
+def read_book(book_id: int, db: Session = Depends(get_db)):
     book = crud.get_book(db, book_id)
 
     if book is None:
@@ -94,7 +91,7 @@ def update_book(
                 detail="Категория не найдена"
             )
 
-    updated_book = crud.update_book(
+    return crud.update_book(
         db=db,
         book_id=book_id,
         title=book.title,
@@ -104,13 +101,8 @@ def update_book(
         category_id=book.category_id
     )
 
-    return updated_book
-
 @router.delete("/{book_id}")
-def delete_book(
-    book_id: int,
-    db: Session = Depends(get_db)
-):
+def delete_book(book_id: int, db: Session = Depends(get_db)):
     deleted_book = crud.delete_book(db, book_id)
 
     if deleted_book is None:

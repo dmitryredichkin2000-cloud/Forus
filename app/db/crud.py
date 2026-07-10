@@ -2,14 +2,7 @@ from sqlalchemy.orm import Session
 
 from app.db.models import Book, Category
 
-# ==========================================================
-# CRUD для таблицы categories
-# ==========================================================
-
 def create_category(db: Session, title: str):
-    """
-    Создание новой категории.
-    """
     category = Category(title=title)
 
     db.add(category)
@@ -19,9 +12,6 @@ def create_category(db: Session, title: str):
     return category
 
 def get_category(db: Session, category_id: int):
-    """
-    Получение категории по ID.
-    """
     return (
         db.query(Category)
         .filter(Category.id == category_id)
@@ -29,9 +19,6 @@ def get_category(db: Session, category_id: int):
     )
 
 def get_all_categories(db: Session):
-    """
-    Получение всех категорий.
-    """
     return (
         db.query(Category)
         .order_by(Category.id)
@@ -39,9 +26,6 @@ def get_all_categories(db: Session):
     )
 
 def update_category(db: Session, category_id: int, new_title: str):
-    """
-    Обновление категории.
-    """
     category = get_category(db, category_id)
 
     if category is None:
@@ -55,9 +39,6 @@ def update_category(db: Session, category_id: int, new_title: str):
     return category
 
 def delete_category(db: Session, category_id: int):
-    """
-    Удаление категории.
-    """
     category = get_category(db, category_id)
 
     if category is None:
@@ -68,10 +49,6 @@ def delete_category(db: Session, category_id: int):
 
     return category
 
-# ==========================================================
-# CRUD для таблицы books
-# ==========================================================
-
 def create_book(
     db: Session,
     title: str,
@@ -80,9 +57,6 @@ def create_book(
     category_id: int,
     url: str = ""
 ):
-    """
-    Создание новой книги.
-    """
     book = Book(
         title=title,
         description=description,
@@ -98,9 +72,6 @@ def create_book(
     return book
 
 def get_book(db: Session, book_id: int):
-    """
-    Получение книги по ID.
-    """
     return (
         db.query(Book)
         .filter(Book.id == book_id)
@@ -108,9 +79,6 @@ def get_book(db: Session, book_id: int):
     )
 
 def get_all_books(db: Session):
-    """
-    Получение всех книг.
-    """
     return (
         db.query(Book)
         .order_by(Book.id)
@@ -118,9 +86,6 @@ def get_all_books(db: Session):
     )
 
 def get_books_by_category(db: Session, category_id: int):
-    """
-    Получение книг по категории.
-    """
     return (
         db.query(Book)
         .filter(Book.category_id == category_id)
@@ -137,10 +102,6 @@ def update_book(
     url: str | None = None,
     category_id: int | None = None
 ):
-    """
-    Обновление книги.
-    Можно обновлять как все поля, так и отдельные.
-    """
     book = get_book(db, book_id)
 
     if book is None:
@@ -167,9 +128,6 @@ def update_book(
     return book
 
 def delete_book(db: Session, book_id: int):
-    """
-    Удаление книги.
-    """
     book = get_book(db, book_id)
 
     if book is None:
